@@ -14,7 +14,7 @@ jobs:
       - name: Build Docker Image
         run: |
           echo "Generated image tag is ${{ github.sha }}" && ls
-          docker build -t obike007/vue:webapp-${{ github.sha }} -f ./vue-test-app/Dockerfile ./vue-test-app
+          docker build -t obike007/time-api:latest-${{ github.sha }} -f ./time-api/Dockerfile ./time-api
 
   push_image_to_registry:
     runs-on: self-hosted
@@ -24,7 +24,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Docker Image to Registry
-        run: docker push obike007/vue:webapp-${{ github.sha }}
+        run: docker push obike007/test-api:latest-${{ github.sha }}
 
   deploy_to_dev:
     runs-on: self-hosted
@@ -42,7 +42,7 @@ jobs:
         run: |
           git clone https://${{ secrets.USERNAME_TOKEN}}:${{ secrets.PIPELINE_TOKEN }}@github.com/obike007/jobs.git
           cd jobs 
-          sed -i "s/vue:webapp-.*/vue:webapp-${{ github.sha }}/g" deployment.yaml
+          sed -i "s/time-app:latest-.*/time-app:latest-${{ github.sha }}/g" deployment.yaml
           cat deployment.yaml
           git add deployment.yaml
           git commit -m "Update Vue.js test app Dev env k8s manifest file"
