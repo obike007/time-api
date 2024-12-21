@@ -1,49 +1,22 @@
-name: workflows
+name: Deploy to AWS ECS
 on:
   push:
     branches:
-      - master
-
+      - main
 jobs:
-  build_docker_image:
-    runs-on: self-hosted
+  deploy:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Docker Image
-        run: |
-          echo "Generated image tag is ${{ github.sha }}" && ls
-          docker build -t obike007/time-api:latest-${{ github.sha }} -f ./time-api/Dockerfile ./time-api
+      - name: time-api
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.0
 
-  push_image_to_registry:
-    runs-on: self-hosted
-    needs: build_docker_image
-    steps:
-      - name: Login to Docker Registry
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Initialize Terraform
+        run: terraform init
 
-      - name: Push Docker Image to Registry
-        run: docker push obike007/test-api:latest-${{ github.sha }}
-
-  deploy_to_dev:
-    runs-on: self-hosted
-    needs: push_image_to_registry
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Configure Git
-        run: |
-          git config --global user.email "pipeline_user@thebulb.com"
-          git config --global user.name "pipeline"
-          
-      - name: Update Kubernetes Manifests
-        run: |
-          git clone https://${{ secrets.USERNAME_TOKEN}}:${{ secrets.PIPELINE_TOKEN }}@github.com/obike007/jobs.git
-          cd jobs 
-          sed -i "s/time-app:latest-.*/time-app:latest-${{ github.sha }}/g" deployment.yaml
-          cat deployment.yaml
-          git add deployment.yaml
-          git commit -m "Update Vue.js test app Dev env k8s manifest file"
-          git push origin main
+      - name: Apply Terraform
+        run: terraform apply -auto-approve
