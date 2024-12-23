@@ -3,7 +3,7 @@ variable "cluster_name" {
     default = "time"  
 }
 
-variable "family" {
+variable "service" {
     type = string
     default = "service"  
 }
@@ -45,13 +45,25 @@ variable "cidr_block"{
 variable "public_subnets_count"{
     type = number
     description = "number of public subnets"
-    default = "3"
+    default = 3
 }
 
 variable "public_subnets" {
     type = number
     description = "number of subnet"
-    default = "3"
+    default = 3
   }
 
+variable "security_group" {
+    type = string
+    default = "lb" 
+  
+}
+
+variable "subnets" {}
+
+variable "vpc_id" {
+    type = string
+    default = "0ooedd015ID"
+}
 

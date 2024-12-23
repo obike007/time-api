@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_task_definition" "app" {
-  family                   = var.family
+  family                   = var.service
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.cpu
@@ -24,7 +24,7 @@ resource "aws_ecs_service" "main" {
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 
-  network_configuration {
+  network_configuration "aws_ecs_net_conf" {
     subnets         = var.subnets
     security_groups = var.security_groups
   }
