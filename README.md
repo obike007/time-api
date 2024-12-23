@@ -19,7 +19,7 @@ local	>= 2.5
 null	>= 2.0
 tls	>= 3.1
 
-When this ran terraform will output:
+When this is applied terraform will output:
 terraform output alb_dns_name
 
 curl or paste the output alb_dns to see the server-time api in real time
