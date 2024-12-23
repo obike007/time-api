@@ -1,16 +1,18 @@
-name: Deploy to AWS ECS
+name: Terraform Deploy
+
 on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: time-api
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.4.0
@@ -20,3 +22,4 @@ jobs:
 
       - name: Apply Terraform
         run: terraform apply -auto-approve
+
